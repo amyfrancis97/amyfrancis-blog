@@ -90,7 +90,7 @@ similarity = v1 @ v2
 print(f"Dot product: {similarity:.3f}")
 ```
 
-> Matrix multiplication is *not* commutative. `A @ B != B @ A` in general, just as rotate-then-translate and translate-then-rotate give different results.
+> Matrix multiplication is *not* commutative. $AB \neq BA$ in general, just as rotate-then-translate and translate-then-rotate give different results.
 
 <div class="divider"></div>
 
@@ -98,12 +98,10 @@ print(f"Dot product: {similarity:.3f}")
 
 A system of simultaneous equations like:
 
-```
-2x + y = 8
-x - y  = 1
-```
+$$2x + y = 8$$
+$$x - y = 1$$
 
-can be written as **Ax = b**, where **A** encodes the coefficients, **x** the unknowns, and **b** the outcomes. Writing it this way scales to thousands of equations with no change in notation. Relevant in practice for spectral deconvolution, calibration, and model fitting.
+can be written as $\mathbf{Ax = b}$, where $\mathbf{A}$ encodes the coefficients, $\mathbf{x}$ the unknowns, and $\mathbf{b}$ the outcomes. Writing it this way scales to thousands of equations with no change in notation. Relevant in practice for spectral deconvolution, calibration, and model fitting.
 
 ![Solving a linear system geometrically](/assets/images/linear-algebra/03_linear_system.png)
 
@@ -131,11 +129,11 @@ print(f"Check Ax = {A @ x}  (should equal {b})")
 
 ## 4. Identity and Inverse Matrices
 
-The **identity matrix** I is the matrix equivalent of the number 1 - multiplying anything by it leaves it unchanged. It has 1s along the main diagonal and 0s everywhere else.
+The **identity matrix** $I$ is the matrix equivalent of the number 1 - multiplying anything by it leaves it unchanged. It has 1s along the main diagonal and 0s everywhere else.
 
-The **inverse** of a matrix A, written A^-1, is the matrix that undoes A's transformation. Together they satisfy A^-1 A = I. This is how we analytically solve Ax = b: multiply both sides by A^-1 to get x = A^-1 b.
+The **inverse** of a matrix $A$, written $A^{-1}$, is the matrix that undoes $A$'s transformation. Together they satisfy $A^{-1}A = I$. This is how we analytically solve $\mathbf{Ax = b}$: multiply both sides by $A^{-1}$ to get $\mathbf{x} = A^{-1}\mathbf{b}$.
 
-Not every matrix has an inverse. If the columns of A are linearly dependent, the determinant is zero and no inverse exists - such a matrix is called **singular**.
+Not every matrix has an inverse. If the columns of $A$ are linearly dependent, the determinant is zero and no inverse exists - such a matrix is called **singular**.
 
 ![Identity matrix, inversion, and singularity](/assets/images/linear-algebra/04_identity_inverse.png)
 
@@ -164,7 +162,7 @@ print(f"\nDeterminant: {np.linalg.det(singular):.1f}")  # 0.0
 
 <div class="callout">
   <div class="callout-label">Worth knowing</div>
-  <p>In practice, computing A^-1 explicitly and then multiplying is often numerically less stable than using <code>np.linalg.solve(A, b)</code> directly. The solve function uses more robust algorithms internally. Reserve explicit inversion for cases where you genuinely need the inverse matrix itself.</p>
+  <p>In practice, computing $A^{-1}$ explicitly and then multiplying is often numerically less stable than using <code>np.linalg.solve(A, b)</code> directly. The solve function uses more robust algorithms internally. Reserve explicit inversion for cases where you genuinely need the inverse matrix itself.</p>
 </div>
 
 <div class="divider"></div>
@@ -175,7 +173,7 @@ The **span** of a set of vectors is the set of all points you can reach by scali
 
 Vectors are **linearly independent** if none of them can be written as a combination of the others. If one can, the set is **linearly dependent** and the redundant vector adds no new reachable space.
 
-This matters for Ax = b: a solution exists only if b lies within the column space (span of the columns of A), and a unique solution only exists if the columns are all linearly independent.
+This matters for $\mathbf{Ax = b}$: a solution exists only if $\mathbf{b}$ lies within the column space (span of the columns of $A$), and a unique solution only exists if the columns are all linearly independent.
 
 ![Linear dependence and span illustrated](/assets/images/linear-algebra/05_linear_dependence.png)
 
@@ -236,9 +234,9 @@ print(f"RMSD: {rmsd:.4f}")
 
 | Norm | Formula | Prefers | Used in |
 |------|---------|---------|---------|
-| L2 | sqrt(sum of x^2) | All residuals small | RMSD, Ridge regression |
-| L1 | sum of abs(x) | Many exact zeros | LASSO, sparse models |
-| L-inf | max abs(x) | Worst-case element | Robust optimisation |
+| $L^2$ | $\sqrt{\sum x_i^2}$ | All residuals small | RMSD, Ridge regression |
+| $L^1$ | $\sum \|x_i\|$ | Many exact zeros | LASSO, sparse models |
+| $L^\infty$ | $\max \|x_i\|$ | Worst-case element | Robust optimisation |
 
 <div class="divider"></div>
 
@@ -267,13 +265,15 @@ R = np.array([[np.cos(theta), -np.sin(theta)],
 print("R @ R^T =\n", np.round(R @ R.T, 3))   # identity
 ```
 
-> **Orthogonal matrices** have `A^-1 = A^T`, so inverting them is just a transpose. Computationally, this is essentially free.
+> **Orthogonal matrices** have $A^{-1} = A^\top$, so inverting them is just a transpose. Computationally, this is essentially free.
 
 <div class="divider"></div>
 
 ## 8. Eigendecomposition
 
-An eigenvector of a matrix **A** is a direction **v** that, when **A** is applied to it, only stretches rather than rotating. The amount of stretching is the **eigenvalue** lambda: **Av = lambda v**
+An eigenvector of a matrix $A$ is a direction $\mathbf{v}$ that, when $A$ is applied to it, only stretches rather than rotating. The amount of stretching is the **eigenvalue** $\lambda$:
+
+$$A\mathbf{v} = \lambda\mathbf{v}$$
 
 Breaking a matrix into its eigenvectors and eigenvalues reveals the natural structure of the data: the directions of greatest variance, the fundamental modes, the axes of a covariance ellipse.
 
@@ -308,7 +308,11 @@ for i, (ev, ve) in enumerate(zip(eigenvalues, variance_explained)):
 
 ## 9. Singular Value Decomposition (SVD)
 
-SVD is a more general factorisation that works on *any* matrix, not just square ones. It writes **A** as a product of three matrices: **A = U D V^T** where **U** and **V** are orthogonal and **D** is diagonal. The diagonal entries of **D** are the **singular values**, ranked by importance. Discarding small ones removes noise while keeping the signal.
+SVD is a more general factorisation that works on *any* matrix, not just square ones. It writes $A$ as a product of three matrices:
+
+$$A = UDV^\top$$
+
+where $U$ and $V$ are orthogonal and $D$ is diagonal. The diagonal entries of $D$ are the **singular values**, ranked by importance. Discarding small ones removes noise while keeping the signal.
 
 ![SVD: singular value spectrum and noise filtering](/assets/images/linear-algebra/08_svd.png)
 
@@ -351,7 +355,7 @@ print(f"Variance captured: {variance_captured*100:.1f}%")
 
 Real systems are rarely perfectly square. Either there are more measurements than unknowns (overdetermined - no exact solution) or more unknowns than measurements (underdetermined - infinitely many solutions). Standard inversion cannot handle either case.
 
-The **Moore-Penrose pseudoinverse** A+ gives the best available answer: the least-squares solution for overdetermined systems, and the minimum-norm solution for underdetermined ones.
+The **Moore-Penrose pseudoinverse** $A^+$ gives the best available answer: the least-squares solution for overdetermined systems, and the minimum-norm solution for underdetermined ones.
 
 ![Least-squares fit via pseudoinverse](/assets/images/linear-algebra/09_pseudoinverse.png)
 
@@ -418,7 +422,7 @@ print(f"Frobenius norm: {frob:.3f}")
 
 PCA is where everything above comes together. It applies eigenvectors (to find directions of variation), orthogonality (to keep axes uncorrelated), and norms (to minimise reconstruction error) to a practical problem: given a high-dimensional dataset, find the lower-dimensional representation that loses the least information.
 
-The derivation shows that the optimal encoding directions are the eigenvectors of X^T X corresponding to the largest eigenvalues.
+The derivation shows that the optimal encoding directions are the eigenvectors of $X^\top X$ corresponding to the largest eigenvalues.
 
 ![PCA in action on a 2D correlated dataset](/assets/images/linear-algebra/10_pca.png)
 
@@ -481,13 +485,13 @@ print(f"Reconstruction RMSD (1 PC): {error:.3f}")
 | Transpose | Flip rows and columns | Common in covariance calculations |
 | Matrix multiply | Transform / combine data | Linear models, coordinate changes |
 | Identity matrix | The "do nothing" matrix | Baseline for defining inverses |
-| Inverse | Undo a transformation; solve Ax=b | Spectral deconvolution, calibration |
+| Inverse $A^{-1}$ | Undo a transformation; solve $\mathbf{Ax=b}$ | Spectral deconvolution, calibration |
 | Linear dependence | Redundancy among variables | Collinearity, rank, solvability |
 | Norms | Measure vector size | RMSD, LASSO, Ridge |
-| Eigenvectors/values | Natural axes and magnitudes | PCA, normal modes, covariance structure |
-| SVD | Universal factorisation | Noise filtering, NMR/cryo-EM, compression |
-| Pseudoinverse | Best approximate solution | Least-squares fitting, linear regression |
+| Eigenvectors / values | Natural axes and magnitudes | PCA, normal modes, covariance structure |
+| SVD $UDV^\top$ | Universal factorisation | Noise filtering, NMR/cryo-EM, compression |
+| Pseudoinverse $A^+$ | Best approximate solution | Least-squares fitting, linear regression |
 | Determinant | Volume scaling factor | Detect collinearity; check invertibility |
-| Trace | Sum of diagonal (= sum of eigenvalues) | Frobenius norm, matrix invariants |
+| Trace | Sum of diagonal $= \sum \lambda_i$ | Frobenius norm, matrix invariants |
 
 *Based on Chapter 2 of [Deep Learning](https://www.deeplearningbook.org/) by Goodfellow, Bengio and Courville (MIT Press, 2016).*

@@ -11,7 +11,7 @@ Example: `2026-04-10-my-new-post.md`
 ---
 layout: post
 title: "Your Post Title Here"
-description: "One or two sentences describing the post — shown on the homepage card."
+description: "One or two sentences describing the post - shown on the homepage card."
 standfirst: "The opening paragraph shown under the title on the post page."
 category: opinion
 category_label: "Opinion"

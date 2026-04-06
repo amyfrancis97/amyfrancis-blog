@@ -9,28 +9,30 @@ date: 2026-03-15
 read_time: 8
 ---
 
-Over the past few years I have had the chance to work across a fairly wide range of collaborative settings - competitive hackathons, academic research groups, industry internships, a data study group at the Alan Turing Institute. The contexts were different, the problems were different, the people were very different. But one thing kept showing up in roughly the same form.
+I've watched some of the best science happen when people with completely different backgrounds collide on the same problem. In my experience, this isn't a one-off - it plays out almost every time. I think the reason is worth exploring.
 
-The teams that did the most interesting work were almost never the ones with the deepest shared expertise. They were the ones where people came in with genuinely different mental models, different instincts about what mattered, and different vocabularies for describing the same thing. That combination - uncomfortable as it can sometimes feel - consistently produced better questions, broader solution spaces, and results that none of the individuals involved could have reached working within their own discipline alone.
+Over the past decade I have had the chance to work across a fairly wide range of collaborative settings - competitive hackathons, research groups, and industry internships. The contexts were different, the problems were different, and the people were different. But one thing was constant.
+
+The teams that did the most impactful work were almost never the ones with the deepest shared expertise. They were the ones where people came in with different mental models, different instincts about what mattered, and different vocabularies for describing the same thing. That combination - uncomfortable as it can sometimes feel - consistently produced better questions, broader solution spaces, and results that none of the individuals involved could have reached working within their own discipline alone.
 
 I want to say something more specific than "diversity is good," because the vague version of that argument is easy to agree with and easy to ignore.
 
 <div class="divider"></div>
 
-## Three settings, the same pattern
+## Three settings with the same pattern
 
-The pattern becomes more convincing when it holds across settings that are structurally quite different.
+The pattern becomes more convincing when it holds across different problem spaces.
 
 <div class="experience-box">
   <div class="exp-label">GetSeen Ventures AI x Cancer Bio Hackathon - Cambridge</div>
   <div class="exp-title">Mapping novel compounds to biological pathways</div>
-  <p class="exp-body">A competitive hackathon with a tight deadline and a hard problem - predicting which biological pathways novel compounds would affect, using high-content imaging data. The team included people from computational chemistry, software engineering, and biology. The solution we built - using transformer encoders on molecular representations alongside image embeddings - came from a conversation between someone who thought about molecules and someone who thought about language models, mediated by someone who understood what the biology actually needed to tell us. No single person had all three pieces.</p>
+  <p class="exp-body">A competitive hackathon with a tight deadline and a hard problem - predicting which biological pathways novel compounds would affect, using high-content imaging data. The team included people from biochemistry, engineering, and biology. The solution we built - using transformer encoders on molecular representations alongside image embeddings - came from a conversation between someone who thought about molecules and someone who thought about language models, mediated by someone who understood what the biology actually needed to tell us. No single person had all three pieces.</p>
 </div>
 
 <div class="experience-box moss">
   <div class="exp-label">Roche and Health Data Research UK Hackathon - Wellcome Collection</div>
   <div class="exp-title">Deep learning for protein fitness prediction</div>
-  <p class="exp-body">A similar format, a different problem. Predicting how mutations affect protein function using deep mutational scanning data. The team spanned protein biochemistry, deep learning, and statistics. The biochemist knew which parts of the sequence space were biologically meaningful. The statistician kept asking whether what the model was learning was actually what we thought it was learning. The ML work sat in the middle, depending on both. The result was a model that generalised well precisely because it was built with those constraints in mind from the start.</p>
+  <p class="exp-body">A similar format, a different problem. Predicting how mutations affect protein function using deep mutational scanning data. The team spanned protein biochemistry and deep learning. The biochemists understood what the data meant, and what we needed to understand from it. The ML scientists knew how to build the right model for the problem. The result was an accurate model that generalised well because it was built with those constraints in mind from the start.</p>
 </div>
 
 <div class="experience-box terra2">
@@ -49,13 +51,13 @@ Every field has terminology that carries compressed meaning - meaning that can q
 
 ### It widens the solution space
 
-A biologist looking at a classification problem will reach for one set of tools. A software engineer will reach for another. A statistician will question whether it is actually a classification problem at all. Three different framings of the same problem is more valuable than three people with identical training each arriving at the same framing independently - even if reconciling those framings takes more time upfront.
+A biologist looking at a classification problem will reach for one set of tools. A software engineer will reach for another. A statistician will question whether it is actually a classification problem at all. Three different approaches to the same problem is more valuable than three people with identical training each arriving at the same framing independently - even if reconciling those framings takes more time upfront.
 
 ### It produces better questions
 
 The questions that come from genuine confusion - from someone who does not understand why you are approaching something a particular way - are frequently the ones that matter most. Not because naivety is a virtue, but because accumulated expertise builds accumulated assumptions, and those assumptions are often invisible from inside the field.
 
-> "The most useful question I heard in three days of a hackathon came from a software engineer who had never worked in biology. He asked why we were treating the problem as single-stage rather than decomposing it. It was not a biological insight. But none of the biologists had thought to ask it."
+> "The most useful question I heard in three days of a hackathon came from an AI engineer who had never worked in biology. He asked why we were treating the problem as single-stage rather than decomposing it. It was not a biological insight. But none of the biologists had thought to ask it."
 
 ## The bridge-builder is the most underrated role in science
 
@@ -75,4 +77,4 @@ Hiring is also hard across domain lines. It is difficult to evaluate someone who
 
 <div class="divider"></div>
 
-That is what I think interdisciplinary teams are actually for. Not just to produce better results, though they often do. But to generate the kind of thinking that only happens when people who see the world differently are given a problem and asked to work on it together. That thinking is harder to measure than a citation count or a winning model. It is also, I suspect, where most of the important ideas come from.
+Interdisciplinary teams do not just produce better results, though they often do. They also generate the kind of thinking that only happens when people who see the world differently are given a problem and asked to work on it together. That thinking is harder to measure than a citation count or a winning model. It is also, I suspect, where most of the important ideas come from.

@@ -14,7 +14,8 @@ chemistry rather than maths or computer science.
 
 Each section covers one concept: what it is (in plain language), why it matters for data science, and how to use it in Python. No assumed background beyond basic scientific data familiarity and some Python coding experience.
 
----
+
+<div class="divider"></div>
 
 ## Why linear algebra shows up everywhere in machine learning
 

@@ -9,9 +9,27 @@ date: 2026-03-20
 read_time: 25
 ---
 
-This is a coding-first walkthrough of the linear algebra that underpins machine learning - based on Chapter 2 of [Deep Learning](https://www.deeplearningbook.org/) by Goodfellow, Bengio and Courville, but written for scientists who came from the biology or chemistry side, not the maths or CS side.
+This is a coding-first walkthrough of the linear algebra that underpins machine learning - based on Chapter 2 of [Deep Learning](https://www.deeplearningbook.org/) by Goodfellow, Bengio and Courville, but written for scientists coming from biology or
+chemistry rather than maths or computer science.
 
-Each section covers one concept: what it is in plain language, why it matters for data science, and how to use it in Python. No assumed background beyond basic scientific data familiarity and some Python coding experience.
+Each section covers one concept: what it is (in plain language), why it matters for data science, and how to use it in Python. No assumed background beyond basic scientific data familiarity and some Python coding experience.
+
+---
+
+## Why linear algebra shows up everywhere in machine learning
+
+Most scientific datasets can be written as a matrix: rows are samples, columns are variables. Once your data is in that form, almost everything you do to it-fitting models, reducing dimensionality, filtering noise, finding patterns-can be expressed as matrix operations.
+
+Linear algebra is the language that makes those operations precise and scalable:
+
+- A linear model is just a matrix multiplication  
+- Least-squares fitting is solving \(Ax = b\)  
+- PCA is an eigendecomposition of a covariance matrix  
+- Noise filtering is truncating an SVD  
+
+Most machine learning algorithms can be viewed as choosing parameters that minimise some norm of the error.
+
+The goal of this guide is not to teach abstract mathematics, but to show how these operations arise naturally when working with real scientific data, and how to use them directly in Python.
 
 **Requirements:** `numpy`, `matplotlib`, `seaborn`
 

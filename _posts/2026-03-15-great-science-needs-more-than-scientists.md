@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Great science needs more than scientists"
-description: "The benefits of diversity within teams extends beyond workplace culture. In my experience, diversity of background has consistently improved scientific outcomes - a pattern I believe has a specific and often underappreciated explanation.
+description: "The benefits of diversity within teams extends beyond workplace culture. In my experience, diversity of background has consistently improved scientific outcomes - a pattern I believe has a specific and often underappreciated explanation."
 standfirst: "The benefits of diversity within teams extends beyond workplace culture. In my experience, diversity of background has consistently improved scientific outcomes - a pattern I believe has a specific and often underappreciated explanation."
 category: opinion
 category_label: "Opinion"

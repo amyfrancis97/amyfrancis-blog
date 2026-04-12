@@ -1,15 +1,13 @@
 ---
 layout: post
 title: "Great science needs more than scientists"
-description: "Diversity of background does not just make teams more pleasant to work in. It makes the science better. I have seen the same thing play out across very different settings - and I think the reason is worth examining carefully."
-standfirst: "Diversity of background does not just make teams more pleasant to work in. It makes the science better. I have seen the same thing play out across very different settings - and I think the reason is worth examining carefully."
+description: "The benefits of diversity within teams extends beyond workplace culture. In my experience, diversity of background has consistently improved scientific outcomes - a pattern I believe has a specific and often underappreciated explanation.
+standfirst: "The benefits of diversity within teams extends beyond workplace culture. In my experience, diversity of background has consistently improved scientific outcomes - a pattern I believe has a specific and often underappreciated explanation."
 category: opinion
 category_label: "Opinion"
 date: 2026-03-15
 read_time: 8
 ---
-
-The benefits of diversity within teams extends beyond workplace culture. In my experience, diversity of background has consistently improved scientific outcomes - a pattern I believe has a specific and often underappreciated explanation.
 
 I've watched some of the best science happen when people with completely different backgrounds and skillsets come together to work on a problem.
 

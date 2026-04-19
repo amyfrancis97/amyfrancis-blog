@@ -24,11 +24,44 @@ layout: default
 <div class="post-body">
   {{ content }}
 
+  <!-- ── SHARE ── -->
+  <div class="share-row">
+    <span class="share-label">Share this post</span>
+    <div class="share-btns">
+      <a class="share-btn" href="https://twitter.com/intent/tweet?url={{ page.url | absolute_url | url_encode }}&text={{ page.title | url_encode }}" target="_blank" rel="noopener" aria-label="Share on X">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X / Twitter
+      </a>
+      <a class="share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url={{ page.url | absolute_url | url_encode }}" target="_blank" rel="noopener" aria-label="Share on LinkedIn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+      <button class="share-btn" onclick="copyLink(this)" aria-label="Copy link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        Copy link
+      </button>
+    </div>
+  </div>
+
   <div class="author-bio">
     <span class="label">About the author</span>
     <span class="name">Amy Francis, PhD</span>
     <span class="bio">Senior Data Scientist at Nexus BioQuest, Bristol. Previously AI intern at Roche, where I worked on protein language models and antibody fitness prediction. PhD in Bioinformatics and Machine Learning from the University of Bristol, funded by Cancer Research UK. Views are my own.</span>
-    <a href="https://amyfrancis97.github.io#contact">Say hello</a>
+    <a href="https://amyfrancis-science.github.io">About me</a>
+  </div>
+</div>
+
+<!-- ── SUBSCRIBE (post) ── -->
+<div class="subscribe-strip">
+  <div class="subscribe-inner">
+    <div class="subscribe-text">
+      <p class="subscribe-heading">Get new posts by email</p>
+      <p class="subscribe-sub">No spam — just new writing on AI, drug discovery, and data science when it goes up.</p>
+    </div>
+    <form class="subscribe-form" action="https://buttondown.email/api/emails/embed-subscribe/amyfrancis-science" method="post" target="popupwindow" onsubmit="window.open('https://buttondown.email/amyfrancis-science','popupwindow')">
+      <input type="email" name="email" placeholder="your@email.com" required>
+      <button type="submit">Subscribe</button>
+    </form>
   </div>
 </div>
 
@@ -51,5 +84,15 @@ layout: default
 
 <footer>
   <div>© 2026 Amy Francis · All rights reserved</div>
-  <div>Senior Data Scientist · <span>Bristol, UK</span> · <a href="https://amyfrancis97.github.io">CV &amp; About</a></div>
+  <div>Senior Data Scientist · <span>Bristol, UK</span></div>
 </footer>
+
+<script>
+function copyLink(btn) {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  });
+}
+</script>

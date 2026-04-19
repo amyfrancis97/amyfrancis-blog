@@ -361,6 +361,53 @@ blockquote {
   margin-top: 0.5rem; display: inline-block;
 }
 
+/* ── CONTACT (homepage) ── */
+.blog-contact {
+  background: var(--sand);
+  padding: 4rem 7vw 22rem;
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--sand-dark);
+}
+.channels {
+  display: flex; flex-direction: column; gap: 0.9rem;
+  max-width: 480px;
+  position: relative; z-index: 1;
+}
+.channel {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.9rem 1rem; background: var(--shell);
+  border-radius: 2px; text-decoration: none; color: var(--ink);
+  transition: background 0.2s;
+}
+.channel:hover { background: var(--sand-dark); }
+.ch-icon {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--terra); display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ch-info strong { display: block; font-size: 0.88rem; font-weight: 500; color: var(--ink); }
+.ch-info span { font-size: 0.78rem; color: var(--muted); }
+.bristol-sketch {
+  position: absolute; bottom: 0; left: 7vw; right: 7vw;
+  pointer-events: none; opacity: 0.4;
+  display: flex; align-items: flex-end;
+  mask-image: radial-gradient(ellipse 85% 80% at 50% 50%, black 30%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 80% at 50% 50%, black 30%, transparent 72%);
+}
+.bristol-sketch img {
+  width: 100%; height: auto; display: block;
+  object-fit: contain; mix-blend-mode: multiply;
+  border: none; border-radius: 0; margin: 0;
+}
+@media (max-width: 700px) {
+  .blog-contact { padding-bottom: 14rem; }
+  .bristol-sketch { left: 0; right: 0; }
+}
+@media (max-width: 520px) {
+  .blog-contact { padding-bottom: 10rem; }
+}
+
 /* ── FOOTER ── */
 footer {
   background: var(--ink);

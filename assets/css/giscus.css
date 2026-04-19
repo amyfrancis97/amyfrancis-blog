@@ -1,0 +1,65 @@
+/*
+  Custom Giscus theme for amyfrancis.science
+  Matches the blog's sand/terracotta/ink palette.
+*/
+
+:root {
+  --color-prettylights-syntax-comment: #7A6B5A;
+  --color-prettylights-syntax-constant: #C4622D;
+  --color-prettylights-syntax-entity: #5C6B48;
+  --color-prettylights-syntax-storage-modifier-import: #2A1F14;
+  --color-prettylights-syntax-entity-tag: #C4622D;
+  --color-prettylights-syntax-keyword: #8B3A18;
+  --color-prettylights-syntax-string: #5C6B48;
+  --color-prettylights-syntax-variable: #C4622D;
+  --color-prettylights-syntax-brackethighlighter-unmatched: #C4622D;
+  --color-prettylights-syntax-invalid-illegal-text: #FAF6ED;
+  --color-prettylights-syntax-invalid-illegal-bg: #8B3A18;
+  --color-prettylights-syntax-carriage-return-text: #FAF6ED;
+  --color-prettylights-syntax-carriage-return-bg: #C4622D;
+  --color-prettylights-syntax-string-regexp: #5C6B48;
+  --color-prettylights-syntax-markup-list: #4A3828;
+  --color-prettylights-syntax-markup-heading: #C4622D;
+  --color-prettylights-syntax-markup-italic: #2A1F14;
+  --color-prettylights-syntax-markup-bold: #2A1F14;
+  --color-prettylights-syntax-markup-deleted-text: #8B3A18;
+  --color-prettylights-syntax-markup-deleted-bg: #F5EFE0;
+  --color-prettylights-syntax-markup-inserted-text: #5C6B48;
+  --color-prettylights-syntax-markup-inserted-bg: #F5EFE0;
+  --color-prettylights-syntax-markup-changed-text: #C4622D;
+  --color-prettylights-syntax-markup-changed-bg: #F5EFE0;
+  --color-prettylights-syntax-markup-ignored-text: #7A6B5A;
+  --color-prettylights-syntax-markup-ignored-bg: #F5EFE0;
+  --color-prettylights-syntax-meta-diff-range: #5C6B48;
+  --color-prettylights-syntax-brackethighlighter-angle: #7A6B5A;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #E8DEC8;
+  --color-prettylights-syntax-constant-other-reference-link: #C4622D;
+
+  --color-fg-default: #2A1F14;
+  --color-fg-muted: #7A6B5A;
+  --color-fg-subtle: #7A6B5A;
+  --color-canvas-default: #FAF6ED;
+  --color-canvas-overlay: #FAF6ED;
+  --color-canvas-inset: #F5EFE0;
+  --color-canvas-subtle: #F5EFE0;
+  --color-border-default: #E8DEC8;
+  --color-border-muted: #E8DEC8;
+  --color-neutral-muted: rgba(42,31,20,0.08);
+  --color-accent-fg: #C4622D;
+  --color-accent-emphasis: #C4622D;
+  --color-accent-muted: rgba(196,98,45,0.15);
+  --color-accent-subtle: rgba(196,98,45,0.08);
+  --color-success-fg: #5C6B48;
+  --color-attention-fg: #C4622D;
+  --color-attention-muted: rgba(196,98,45,0.15);
+  --color-attention-subtle: rgba(196,98,45,0.08);
+  --color-danger-fg: #8B3A18;
+  --color-danger-muted: rgba(139,58,24,0.15);
+  --color-danger-subtle: rgba(139,58,24,0.08);
+  --color-primer-shadow-inset: inset 0 1px 0 rgba(42,31,20,0.06);
+  --color-scale-gray-1: #E8DEC8;
+  --color-scale-blue-1: rgba(196,98,45,0.1);
+
+  --font-family: 'DM Sans', sans-serif;
+  --border-radius: 2px;
+}

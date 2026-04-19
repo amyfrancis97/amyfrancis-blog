@@ -146,6 +146,7 @@ nav {
   text-decoration: none; color: inherit;
 }
 .bcard:hover { transform: translateY(-3px); }
+div.bcard { opacity: 0.5; filter: grayscale(20%); pointer-events: none; }
 .bcard.hidden { display: none; }
 .btop-opinion  { border-top: 3px solid var(--terra); }
 .btop-industry { border-top: 3px solid var(--moss); }

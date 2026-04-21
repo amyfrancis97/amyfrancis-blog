@@ -6,7 +6,7 @@ standfirst: "Most machine learning tutorials assume you already know your eigenv
 category: tutorial
 category_label: "Tutorials & Guides"
 date: 2026-03-20
-read_time: 25
+read_time: 35
 ---
 
 This is a coding-first walkthrough of the linear algebra that underpins machine learning - based on Chapter 2 of [Deep Learning](https://www.deeplearningbook.org/) by Goodfellow, Bengio and Courville, but written for scientists coming from biology or
@@ -28,14 +28,20 @@ Linear algebra is the language that makes those operations precise and scalable:
 - PCA is an eigendecomposition of a covariance matrix  
 - Noise filtering is truncating an SVD  
 
-Most machine learning algorithms can be viewed as choosing parameters that minimise some norm of the error.
+Most machine learning algorithms can be viewed as choosing parameters that minimise a loss function — often based on norms of the error, but sometimes a likelihood, cross-entropy, or margin. The linear algebra stays the same regardless.
+
+Gradients are vectors, and optimisation algorithms repeatedly apply matrix operations to update parameters. Understanding the underlying geometry is what makes debugging and adapting these models tractable.
 
 The goal of this guide is not to teach abstract mathematics, but to show how these operations arise naturally when working with real scientific data, and how to use them directly in Python.
 
-**Requirements:** `numpy`, `matplotlib`, `seaborn`
+Throughout, it helps to hold three views of data in mind simultaneously — as a **table of numbers**, as **vectors pointing in space**, and as **transformations that move things around**. Each section approaches the same ideas from one of these angles. By the end, they should feel like the same thing described three different ways.
+
+The running dataset is the [breast cancer Wisconsin dataset](https://scikit-learn.org/stable/datasets/toy_dataset.html#breast-cancer-dataset) — 569 tumour biopsies, each described by 30 cell nucleus measurements. It's real clinical data with clear structure, and it illustrates every concept here naturally.
+
+**Requirements:** `numpy`, `matplotlib`, `seaborn`, `scikit-learn`
 
 ```bash
-pip install numpy matplotlib seaborn
+pip install numpy matplotlib seaborn scikit-learn
 ```
 
 <div class="divider"></div>
@@ -55,26 +61,23 @@ Linear algebra is just a formal way of organising numbers. As a scientist you al
 
 ```python
 import numpy as np
+from sklearn.datasets import load_breast_cancer
 
-# A scalar
-temperature = 37.2
+# Load the dataset: 569 tumour biopsies, 30 cell nucleus measurements each
+bc = load_breast_cancer()
+X, y = bc.data, bc.target          # y: 0 = malignant, 1 = benign
+feature_names = bc.feature_names
 
-# A vector: three measurements on one sample
-sample = np.array([7.2, 22.1, 0.81])  # [pH, Temp(C), Absorbance]
-print(f"pH: {sample[0]}, Temp: {sample[1]}, Abs: {sample[2]}")
+print(f"Data matrix shape: {X.shape}")          # (569, 30)
+print(f"Features: {feature_names[:5]} ...")
+print(f"Classes: {bc.target_names}")             # ['malignant', 'benign']
 
-# A matrix: 5 samples x 3 variables
-data = np.array([
-    [7.2, 22.1, 0.81],
-    [6.8, 25.3, 0.63],
-    [7.5, 19.8, 0.92],
-    [6.5, 28.0, 0.55],
-    [7.1, 21.5, 0.78],
-])
-print(f"Matrix shape: {data.shape}")  # (5, 3)
+# One sample as a vector: 30 measurements from a single biopsy
+sample = X[0]
+print(f"\nSample 0 (malignant): {np.round(sample[:5], 2)} ...")
 
-# Transpose: flip rows and columns
-print(data.T.shape)  # (3, 5)
+# Transpose: (569 x 30) -> (30 x 569)
+print(f"Transposed shape: {X.T.shape}")
 ```
 
 > **Transpose** flips a matrix across its diagonal, so rows become columns. If your data matrix is (samples x variables), its transpose is (variables x samples).
@@ -83,30 +86,30 @@ print(data.T.shape)  # (3, 5)
 
 ## 2. Matrix Multiplication
 
-Matrix multiplication is not element-wise. It combines rows of one matrix with columns of another to produce a new matrix. Geometrically, it *transforms space* - rotating, stretching, or shearing data. This comes up in coordinate changes, mixing variables, and representing linear models.
+Matrix multiplication is not element-wise. It combines rows of one matrix with columns of another: each element of the output is a dot product between a row of $A$ and a column of $B$. That mental model is worth internalising — it makes shape mismatches much easier to debug. Geometrically, it *transforms space* — rotating, stretching, or shearing data. This comes up in coordinate changes, mixing variables, and representing linear models.
 
 ![Matrix multiplication as a geometric transformation](/assets/images/linear-algebra/02_matrix_multiplication.png)
 
 ```python
 import numpy as np
+from sklearn.datasets import load_breast_cancer
+from sklearn.preprocessing import StandardScaler
 
-# Define a transformation matrix
-A = np.array([[2,   0.5],
-              [0.3, 1.5]])
+bc = load_breast_cancer()
+X = bc.data[:, :2]   # radius_mean, texture_mean for illustration
 
-# Apply A to a set of 2D points (unit square corners)
-square = np.array([[0, 1, 1, 0],
-                   [0, 0, 1, 1]], dtype=float)
+# Standardise: subtract mean, divide by std — a matrix operation
+scaler = StandardScaler()
+X_std = scaler.fit_transform(X)
+print(f"Original:     mean={X.mean(axis=0).round(2)}, std={X.std(axis=0).round(2)}")
+print(f"Standardised: mean={X_std.mean(axis=0).round(2)}, std={X_std.std(axis=0).round(2)}")
 
-transformed = A @ square  # @ is Python's matrix multiply operator
-print("Original points:\n", square.T)
-print("Transformed points:\n", transformed.T)
-
-# Dot product: how aligned are two vectors?
-v1 = np.array([1.0, 2.0, 3.0])  # e.g. spectrum 1
-v2 = np.array([1.1, 1.9, 3.1])  # e.g. spectrum 2
-similarity = v1 @ v2
-print(f"Dot product: {similarity:.3f}")
+# Matrix multiplication: rotate the standardised data 45 degrees
+theta = np.pi / 4
+R = np.array([[np.cos(theta), -np.sin(theta)],
+              [np.sin(theta),  np.cos(theta)]])
+X_rotated = X_std @ R.T
+print(f"Rotated shape: {X_rotated.shape}")
 ```
 
 > Matrix multiplication is *not* commutative. $AB \neq BA$ in general, just as rotate-then-translate and translate-then-rotate give different results.
@@ -198,24 +201,21 @@ This matters for $\mathbf{Ax = b}$: a solution exists only if $\mathbf{b}$ lies 
 
 ```python
 import numpy as np
+from sklearn.datasets import load_breast_cancer
 
-# Two linearly independent vectors: span all of 2D space
-v1 = np.array([2.0, 0.5])
-v2 = np.array([0.5, 2.0])
+bc = load_breast_cancer()
+X = bc.data
 
-target = np.array([1.5, 1.8])
-A = np.column_stack([v1, v2])
-coeffs = np.linalg.solve(A, target)
-print(f"target = {coeffs[0]:.2f}*v1 + {coeffs[1]:.2f}*v2")
+# radius_mean and perimeter_mean are nearly perfectly correlated
+r = np.corrcoef(X[:, 0], X[:, 2])[0, 1]  # features 0 and 2
+print(f"Correlation (radius vs perimeter): {r:.4f}")  # ~0.998
 
-# Two linearly dependent vectors: span only a 1D line
-v1 = np.array([1.0, 2.0])
-v2 = np.array([2.0, 4.0])   # = 2 * v1 -- redundant
+# Check rank: with 30 features, rank should be 30 if all independent
+print(f"Data matrix rank: {np.linalg.matrix_rank(X)}")
 
-A_indep = np.column_stack([np.array([2., 0.5]), np.array([0.5, 2.])])
-A_dep   = np.column_stack([v1, v2])
-print(f"Rank of independent matrix: {np.linalg.matrix_rank(A_indep)}")  # 2
-print(f"Rank of dependent matrix:   {np.linalg.matrix_rank(A_dep)}")    # 1
+# A matrix built from two nearly identical columns has rank 1
+A_dep = np.column_stack([X[:, 0], X[:, 2]])   # radius ~ perimeter
+print(f"Rank of [radius, perimeter]: {np.linalg.matrix_rank(A_dep)}")  # 2, but barely
 ```
 
 > **Rank** tells you the true dimensionality of a matrix's column space. If `np.linalg.matrix_rank(A) < A.shape[1]`, your variables are collinear and you should consider dimensionality reduction before fitting models.
@@ -300,25 +300,26 @@ Breaking a matrix into its eigenvectors and eigenvalues reveals the natural stru
 
 ```python
 import numpy as np
+from sklearn.datasets import load_breast_cancer
+from sklearn.preprocessing import StandardScaler
 
-cov = np.array([[3.0, 1.8],
-                [1.8, 1.5]])
+bc = load_breast_cancer()
+X = StandardScaler().fit_transform(bc.data)
 
-# Use eigh for symmetric matrices - more numerically stable
-eigenvalues, eigenvectors = np.linalg.eigh(cov)
+# Covariance matrix of the standardised 30-feature dataset
+C = X.T @ X / (len(X) - 1)   # (30 x 30)
 
-# Sort by descending eigenvalue
+eigenvalues, eigenvectors = np.linalg.eigh(C)
 idx = np.argsort(eigenvalues)[::-1]
 eigenvalues  = eigenvalues[idx]
 eigenvectors = eigenvectors[:, idx]
 
-print("Eigenvalues:", np.round(eigenvalues, 3))
-print("Eigenvectors (columns):\n", np.round(eigenvectors, 3))
+print("Top 5 eigenvalues:", np.round(eigenvalues[:5], 3))
 
-# Variance explained
 variance_explained = eigenvalues / eigenvalues.sum() * 100
-for i, (ev, ve) in enumerate(zip(eigenvalues, variance_explained)):
-    print(f"PC{i+1}: eigenvalue={ev:.3f}, explains {ve:.1f}% of variance")
+cumulative = np.cumsum(variance_explained)
+for i in range(5):
+    print(f"PC{i+1}: {variance_explained[i]:.1f}% variance  (cumulative: {cumulative[i]:.1f}%)")
 ```
 
 > Normal modes of vibration in a molecule are eigenvectors of the force constant (Hessian) matrix. Each mode oscillates independently at a characteristic frequency given by its eigenvalue. PCA in genomics, metabolomics, and ecology works the same way.
@@ -337,28 +338,30 @@ where $U$ and $V$ are orthogonal and $D$ is diagonal. The diagonal entries of $D
 
 ```python
 import numpy as np
+from sklearn.datasets import load_breast_cancer
+from sklearn.preprocessing import StandardScaler
 
-# Simulate a noisy spectral data matrix
-np.random.seed(0)
-t = np.linspace(0, 4*np.pi, 80)
-signal = np.outer(np.sin(t), np.cos(t*0.5)) + np.outer(np.cos(t*0.3), np.sin(t))
-noisy  = signal + 0.5 * np.random.randn(*signal.shape)
+bc = load_breast_cancer()
+X = StandardScaler().fit_transform(bc.data)   # (569 x 30)
 
-U, s, Vt = np.linalg.svd(noisy)
+U, s, Vt = np.linalg.svd(X, full_matrices=False)
 print(f"Singular values (first 8): {np.round(s[:8], 2)}")
+print(f"U: {U.shape}, s: {s.shape}, Vt: {Vt.shape}")
 
-# Low-rank reconstruction: keep only the top k components
+# How many components to capture 90% of variance?
+variance_ratio = s**2 / (s**2).sum()
+cumulative = np.cumsum(variance_ratio)
+k90 = np.searchsorted(cumulative, 0.90) + 1
+print(f"\nComponents needed for 90% variance: {k90}")
+
+# Low-rank reconstruction
 def reconstruct(U, s, Vt, k):
     return (U[:, :k] * s[:k]) @ Vt[:k, :]
 
-k = 4  # keep top 4 (signal), discard the rest (noise)
-denoised = reconstruct(U, s, Vt, k)
-
-error = np.linalg.norm(signal - denoised) / np.linalg.norm(signal)
-print(f"Relative error after rank-{k} reconstruction: {error:.3f}")
-
-variance_captured = (s[:k]**2).sum() / (s**2).sum()
-print(f"Variance captured: {variance_captured*100:.1f}%")
+X_5 = reconstruct(U, s, Vt, 5)
+error = np.linalg.norm(X - X_5, 'fro') / np.linalg.norm(X, 'fro')
+print(f"Relative reconstruction error (k=5): {error:.3f}")
+print(f"Variance captured (k=5): {cumulative[4]*100:.1f}%")
 ```
 
 | Application | How SVD is used |
@@ -367,6 +370,8 @@ print(f"Variance captured: {variance_captured*100:.1f}%")
 | PCA | Right singular vectors of centred data = eigenvectors of covariance matrix |
 | Data compression | Store only top-k singular values and vectors |
 | Latent Semantic Analysis | Find hidden topics in document-term matrices |
+
+> In practice, PCA is almost always computed via SVD of the centred data matrix rather than eigendecomposition of the covariance matrix — it is more numerically stable and avoids squaring the condition number. `sklearn.decomposition.PCA` does this internally.
 
 <div class="divider"></div>
 
@@ -387,6 +392,7 @@ x_data = np.linspace(0, 10, 30)
 y_data = 2.1*x_data + 1.5 + np.random.randn(30)*2
 
 # Build the design matrix
+# The column of ones represents the intercept (bias term) - this generalises to any number of predictors
 A = np.column_stack([x_data, np.ones_like(x_data)])
 
 # Least-squares solution (equivalent to pseudoinverse)
@@ -401,6 +407,41 @@ print(f"Via pinv: slope={params[0]:.3f}, intercept={params[1]:.3f}")
 ```
 
 > This is what linear regression computes. `numpy.linalg.lstsq` and `scipy.stats.linregress` both use the pseudoinverse internally. The same applies to polynomial fitting, multiple regression, and regularised models like Ridge and LASSO.
+
+<div class="callout">
+  <div class="callout-label">Key intuition: projection</div>
+  <p>Geometrically, least-squares fitting is a projection. When you solve $\mathbf{Ax \approx b}$, you're finding the point in the column space of $A$ closest to $\mathbf{b}$ — i.e. projecting $\mathbf{b}$ onto that space. This same idea connects the pseudoinverse, linear regression, and PCA. Everything is a projection of something onto a lower-dimensional subspace.</p>
+</div>
+
+```python
+import numpy as np
+
+# Project vector v onto vector u
+u = np.array([3.0, 1.0])
+v = np.array([2.0, 2.5])
+proj = (v @ u) / (u @ u) * u
+print(f"Projection of v onto u: {np.round(proj, 3)}")
+# Residual: component of v perpendicular to u
+residual = v - proj
+print(f"Residual (perpendicular): {np.round(residual, 3)}")
+print(f"Orthogonal check (should be ~0): {np.round(residual @ u, 10)}")
+```
+
+<div class="callout">
+  <div class="callout-label">Conditioning and numerical stability</div>
+  <p>If the singular values of $A$ span many orders of magnitude — say, from $10^6$ down to $10^{-3}$ — the matrix is ill-conditioned. Small measurement noise can then cause large changes in the solution. Check with <code>np.linalg.cond(A)</code>: a condition number above $10^6$ is a warning sign. This is exactly why regularisation methods like Ridge and LASSO exist — they deliberately constrain the solution to avoid instability from small singular values.</p>
+</div>
+
+```python
+import numpy as np
+
+# Well-conditioned vs ill-conditioned
+A_good = np.array([[3., 1.], [1., 3.]])
+A_bad  = np.array([[1., 1.], [1., 1.001]])  # nearly singular
+
+print(f"Condition number (good): {np.linalg.cond(A_good):.1f}")
+print(f"Condition number (bad):  {np.linalg.cond(A_bad):.2e}")
+```
 
 <div class="divider"></div>
 
@@ -418,8 +459,9 @@ A = np.array([[4.0, 2.0],
 tr = np.trace(A)
 print(f"Trace: {tr}")  # 7.0
 
-# Determinant: product of eigenvalues
+# Determinant: product of eigenvalues (for square matrices)
 # |det| measures how much the matrix expands or contracts volume
+# sign of det encodes orientation: negative = reflection has occurred
 # det = 0 means the matrix is singular
 det = np.linalg.det(A)
 print(f"Determinant: {det:.2f}")  # 10.0
@@ -441,49 +483,50 @@ print(f"Frobenius norm: {frob:.3f}")
 
 PCA is where everything above comes together. It applies eigenvectors (to find directions of variation), orthogonality (to keep axes uncorrelated), and norms (to minimise reconstruction error) to a practical problem: given a high-dimensional dataset, find the lower-dimensional representation that loses the least information.
 
-The derivation shows that the optimal encoding directions are the eigenvectors of $X^\top X$ corresponding to the largest eigenvalues.
+If you ask "which directions preserve the most variance after projecting the data?", the answer is an eigenvalue problem. The derivation shows that the optimal encoding directions are the eigenvectors of $X^\top X$ corresponding to the largest eigenvalues.
 
 ![PCA in action on a 2D correlated dataset](/assets/images/linear-algebra/10_pca.png)
 
 ```python
 import numpy as np
+from sklearn.datasets import load_breast_cancer
+from sklearn.preprocessing import StandardScaler
 
-# Simulate 2D correlated data (e.g. two correlated gene expression measurements)
-np.random.seed(42)
-cov = np.array([[4.0, 2.8],
-                [2.8, 2.5]])
-data = np.random.multivariate_normal([5, 3], cov, 200)
+bc = load_breast_cancer()
+X_raw = bc.data
+y     = bc.target   # 0 = malignant, 1 = benign
 
-# Step 1: centre the data
-mean = data.mean(axis=0)
-X    = data - mean
+# Step 1: standardise (centre and scale — critical when features have different units)
+scaler = StandardScaler()
+X = scaler.fit_transform(X_raw)
 
-# Step 2: compute the covariance matrix
+# Step 2: covariance matrix
 C = X.T @ X / (len(X) - 1)
 
 # Step 3: eigendecomposition
 eigenvalues, eigenvectors = np.linalg.eigh(C)
-idx          = np.argsort(eigenvalues)[::-1]
-eigenvalues  = eigenvalues[idx]
-eigenvectors = eigenvectors[:, idx]
+idx         = np.argsort(eigenvalues)[::-1]
+eigenvalues = eigenvalues[idx]
+eigenvectors= eigenvectors[:, idx]
 
-# Variance explained
-var_exp = eigenvalues / eigenvalues.sum() * 100
-for i, ve in enumerate(var_exp):
-    print(f"PC{i+1}: {ve:.1f}% of variance")
-
-# Step 4: project data onto principal components
+# Step 4: project onto principal components
 scores = X @ eigenvectors
-print(f"Scores shape: {scores.shape}")
 
-# Reconstruction from 1 PC
-reconstructed = scores[:, :1] @ eigenvectors[:, :1].T + mean
-error = np.sqrt(np.mean((data - reconstructed)**2))
-print(f"Reconstruction RMSD (1 PC): {error:.3f}")
+var_exp = eigenvalues / eigenvalues.sum() * 100
+print(f"PC1: {var_exp[0]:.1f}% variance | PC2: {var_exp[1]:.1f}% variance")
 
-# In practice, use scikit-learn:
+# Malignant vs benign separation on PC1
+mal_pc1 = scores[y == 0, 0]
+ben_pc1 = scores[y == 1, 0]
+print(f"PC1 mean (malignant): {mal_pc1.mean():.2f}")
+print(f"PC1 mean (benign):    {ben_pc1.mean():.2f}")
+print("PC1 alone separates the two classes by {:.2f} standard deviations".format(
+    abs(mal_pc1.mean() - ben_pc1.mean()) / scores[:, 0].std()))
+
+# In practice:
 # from sklearn.decomposition import PCA
-# pca = PCA(n_components=2).fit_transform(data)
+# pca = PCA(n_components=2)
+# scores = pca.fit_transform(X)
 ```
 
 | Field | Typical use |
@@ -496,21 +539,38 @@ print(f"Reconstruction RMSD (1 PC): {error:.3f}")
 
 <div class="divider"></div>
 
+<div class="callout">
+  <div class="callout-label">Common mistakes</div>
+  <p><strong>Shape confusion:</strong> data matrices are typically (n_samples, n_features) but many operations expect (n_features, n_samples) — always check <code>.shape</code> before multiplying.</p>
+  <p><strong>Using * instead of @:</strong> <code>*</code> in NumPy is element-wise; <code>@</code> is matrix multiplication. They give different results and both run without error.</p>
+  <p><strong>Skipping centring before PCA:</strong> without centring, the first principal component often just reflects which samples have the highest absolute values, not the structure of variation.</p>
+  <p><strong>Trying to invert a singular or near-singular matrix:</strong> if <code>np.linalg.det(A)</code> is near zero or <code>np.linalg.cond(A)</code> is large, use <code>lstsq</code> or <code>pinv</code> instead of <code>inv</code>.</p>
+  <p><strong>Eigendecomposition on non-symmetric matrices:</strong> use <code>np.linalg.eigh</code> (not <code>eig</code>) for covariance matrices — it is faster, more stable, and guarantees real-valued eigenvalues.</p>
+</div>
+
+<div class="divider"></div>
+
 ## Quick reference
 
-| Concept | What it does | Scientific relevance |
+| Concept | What it does | When to use it |
 |---------|-------------|----------------------|
-| Vector / Matrix | Organise data | Sample x feature tables |
-| Transpose | Flip rows and columns | Common in covariance calculations |
-| Matrix multiply | Transform / combine data | Linear models, coordinate changes |
-| Identity matrix | The "do nothing" matrix | Baseline for defining inverses |
-| Inverse $A^{-1}$ | Undo a transformation; solve $\mathbf{Ax=b}$ | Spectral deconvolution, calibration |
-| Linear dependence | Redundancy among variables | Collinearity, rank, solvability |
-| Norms | Measure vector size | RMSD, LASSO, Ridge |
-| Eigenvectors / values | Natural axes and magnitudes | PCA, normal modes, covariance structure |
-| SVD $UDV^\top$ | Universal factorisation | Noise filtering, NMR/cryo-EM, compression |
-| Pseudoinverse $A^+$ | Best approximate solution | Least-squares fitting, linear regression |
-| Determinant | Volume scaling factor | Detect collinearity; check invertibility |
-| Trace | Sum of diagonal $= \sum \lambda_i$ | Frobenius norm, matrix invariants |
+| Vector / Matrix | Organise data | Any time data is samples x features |
+| Transpose | Flip rows and columns | Covariance: $X^\top X$; shape fixes |
+| Matrix multiply | Transform / combine data | Linear models, coordinate changes; use @ not * |
+| Inverse $A^{-1}$ | Undo a transformation | Only when you need the inverse itself; otherwise use `solve` |
+| Linear dependence | Redundancy among variables | If rank < n_features, reduce dimensions before fitting |
+| Norms | Measure vector size | L2 for smooth solutions (Ridge); L1 for sparsity (LASSO) |
+| Eigenvectors / values | Natural axes and magnitudes | PCA, normal modes; use `eigh` for symmetric matrices |
+| SVD $UDV^\top$ | Universal factorisation | Noise filtering, PCA, any rank-deficient system |
+| Pseudoinverse $A^+$ | Best approximate solution | Overdetermined or underdetermined systems; regression |
+| Determinant | Volume scaling; orientation | Near-zero = collinear variables; negative = reflection |
+| Trace | Sum of eigenvalues | Total variance; Frobenius norm |
 
 *Based on Chapter 2 of [Deep Learning](https://www.deeplearningbook.org/) by Goodfellow, Bengio and Courville (MIT Press, 2016).*
+
+<div class="divider"></div>
+
+<div class="callout">
+  <div class="callout-label">Up next in this series</div>
+  <p><strong>Probability and information theory for scientists — Chapter 3 of the Deep Learning book.</strong> The natural follow-on: once you can represent and transform data with linear algebra, the next question is how to reason about uncertainty in it. Chapter 3 covers probability distributions, expectations, the chain rule, conditional independence, and information-theoretic ideas like entropy and KL divergence — all the foundations that underpin probabilistic models, Bayesian inference, and the loss functions used to train neural networks. Same format as this post: Python throughout, breast cancer dataset as a running example, and the maths introduced only when it earns its place. Subscribe below to be notified when it goes up.</p>
+</div>
